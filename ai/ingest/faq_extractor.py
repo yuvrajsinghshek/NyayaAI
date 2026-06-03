@@ -17,8 +17,11 @@ def get_source_key(filename):
     # so we know which FAQ file this belongs to
     filename_upper = filename.upper()
 
-    if "NCRP" in filename_upper or "FAQ" in filename_upper:
+    if "NCRP" in filename_upper:
         return "NCRP_FAQ"
+    elif "FAQ2" in filename_upper:
+        # all cybercrime advisories collection
+        return "FAQ2"
     else:
         # if no match use filename as source key
         return filename.replace(".txt", "").upper()
