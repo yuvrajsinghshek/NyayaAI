@@ -74,7 +74,8 @@ CATEGORIES = [
 SOURCE_MAP = {
     "TAU_397"  : "TAU-397 Monthly Underground Banking Report May 2026",
     "ADV_003"  : "Advisory TAU-ADV-003 Digital Arrest March 2025",
-    "NCRP_FAQ" : "NCRP FAQ - cybercrime.gov.in"
+    "NCRP_FAQ" : "NCRP FAQ - cybercrime.gov.in",
+    "FAQ2"     : "I4C Cybercrime Advisories Collection"
 }
 
 # ── App Settings ──────────────────────────────────────
