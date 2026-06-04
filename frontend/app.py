@@ -5,6 +5,11 @@
 # ============================================
 
 import streamlit as st
+import sys
+from pathlib import Path
+# ensure the root directory is in sys.path so we can import 'ai'
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from ai.config import APP_NAME, validate_config
 from ai.rag.retriever import retrieve_chunks
 from ai.rag.generator import generate_answer

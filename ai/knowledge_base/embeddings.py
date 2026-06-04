@@ -24,11 +24,16 @@ def get_embeddings(texts):
     # each vector is a list of 384 numbers
     # similar texts will have similar vectors
     log.info(f"🔢 Generating embeddings for {len(texts)} texts")
+
     embeddings = model.encode(
         texts,
-        show_progress_bar=True,  # shows progress during encoding
-        convert_to_list=True     # returns plain list not numpy array
+        show_progress_bar=True  # shows progress during encoding
     )
+
+    # convert numpy array to plain python list
+    # ChromaDB needs plain list not numpy array
+    embeddings = embeddings.tolist()
+
     log.info(f"✅ Embeddings generated — {len(embeddings)} vectors")
     return embeddings
 
@@ -36,5 +41,7 @@ def get_embeddings(texts):
 def get_single_embedding(text):
     # converts single text string to vector
     # used in RAG retriever for user query
-    embedding = model.encode(text, convert_to_list=True)
-    return embedding
+    embedding = model.encode(text)
+
+    # convert numpy to plain list
+    return embedding.tolist()
