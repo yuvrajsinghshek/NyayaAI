@@ -62,6 +62,24 @@ ANSWER:"""
 
 
 def generate_answer(user_question, chunks):
+
+    # check if question is a greeting or simple conversation
+    # handle these directly without searching knowledge base
+    greetings = [
+        "hello", "hi", "hey", "namaste", "hii", "helo",
+        "good morning", "good evening", "good afternoon",
+        "how are you", "what's up", "sup", "greetings"
+    ]
+
+    # if question is a greeting — respond friendly
+    if any(g in user_question.lower() for g in greetings):
+        return {
+            "answer"  : "Hello! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?",
+            "source"  : None,
+            "category": None,
+            "found"   : True
+        }
+
     # if no relevant chunks found — return out of scope message
     if not chunks:
         log.info("⚠️ No chunks — returning out of scope message")
@@ -69,7 +87,7 @@ def generate_answer(user_question, chunks):
             "answer"  : OUT_OF_SCOPE_MESSAGE,
             "source"  : None,
             "category": None,
-            "found"   : False  # tells frontend no answer was found
+            "found"   : False
         }
 
     # combine chunks into context for LLM
@@ -91,8 +109,8 @@ def generate_answer(user_question, chunks):
                 "content": prompt
             }
         ],
-        temperature = 0.3,  # low temperature — consistent factual answers
-        max_tokens  = 500   # max answer length
+        temperature = 0.3,
+        max_tokens  = 500
     )
 
     # extract answer text from Groq response
