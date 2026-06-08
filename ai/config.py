@@ -82,6 +82,21 @@ SOURCE_MAP = {
 APP_NAME    = os.getenv("APP_NAME", "NyayaAI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
 
+# ── Database Settings ─────────────────────────
+# PostgreSQL connection string
+# reads from .env file
+DB_HOST     = os.getenv("DB_HOST", "localhost")
+DB_PORT     = os.getenv("DB_PORT", "5432")
+DB_NAME     = os.getenv("DB_NAME", "nyayaai_db")
+DB_USER     = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+
+# full database URL for SQLAlchemy
+DATABASE_URL = (
+    f"postgresql://{DB_USER}:{DB_PASSWORD}"
+    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+
 # ── Validation ────────────────────────────────────────
 # called at startup to check all required keys present
 # fails early rather than failing silently later
