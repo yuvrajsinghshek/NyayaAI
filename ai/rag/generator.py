@@ -77,10 +77,12 @@ STRICT RULES:
 3. If context does not have enough info — say so clearly
 4. Keep answer clear — 3 to 5 sentences maximum
 5. Do not say "according to the context" or "the document says"
-6. Answer in the SAME LANGUAGE as the user question
-7. If user asks in Hinglish — respond in Hinglish
-8. If user asks in Hindi — respond in Hindi
-9. If user asks in English — respond in English
+6. IMPORTANT — Detect user language:
+   - If user writes in English ONLY — respond in English ONLY
+   - If user writes in Hindi ONLY — respond in Hindi ONLY  
+   - If user writes mixing Hindi+English — respond in Hinglish
+   - Never mix languages unless user does
+   - Never respond in Hindi if user asked in English
 10. If question refers to previous conversation use that context
 {history_section}
 CONTEXT:
