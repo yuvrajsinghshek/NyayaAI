@@ -54,6 +54,33 @@ if not st.session_state.messages:
         "- Cybercrime prevention tips"
     )
 
+# ── Load History From API When Session Changes ────────
+# when user switches chat — load history from PostgreSQL
+if not st.session_state.messages:
+    try:
+        history_response = requests.get(
+            f"http://localhost:8000/chat/history/"
+            f"{st.session_state.session_id}",
+            timeout = 5
+        )
+        if history_response.status_code == 200:
+            history_data = history_response.json()
+            for conv in history_data.get("conversations", []):
+                # add user message
+                st.session_state.messages.append({
+                    "role"   : "user",
+                    "content": conv["user_message"]
+                })
+                # add bot response
+                st.session_state.messages.append({
+                    "role"    : "assistant",
+                    "content" : conv["bot_response"],
+                    "source"  : conv.get("source"),
+                    "category": conv.get("category")
+                })
+    except Exception:
+        pass
+
 # ── Chat History Display ──────────────────────────────
 render_chat_history(st.session_state.messages)
 
