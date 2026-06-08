@@ -1,12 +1,4 @@
-# ============================================
-# NyayaAI — Chat Routes
-# FastAPI endpoints for chat functionality
-# POST /chat     — send message get answer
-# GET  /history  — get chat history
-# DELETE /history — clear chat history
-# ============================================
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from backend.database.db import get_db
 from backend.models.chat import Conversation
@@ -22,53 +14,46 @@ import logging
 
 log = logging.getLogger(__name__)
 
-# APIRouter groups related endpoints together
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
 @router.post("/", response_model=ChatResponse)
 def chat(request: ChatRequest, db: Session = Depends(get_db)):
-    # main chat endpoint
-    # receives user message and session_id
-    # fetches last 3 messages for context
-    # runs RAG pipeline
-    # saves to database
-    # returns answer
 
-    # fetch last 3 messages of this session for context
-    # used to understand follow up questions
+    # fetch last 3 messages for context
     history = db.query(Conversation)\
         .filter(Conversation.session_id == request.session_id)\
         .order_by(Conversation.created_at.desc())\
         .limit(3)\
         .all()
 
-    # build context string from chat history
-    # helps RAG understand follow up questions
-    chat_context = ""
+    # build chat history string for generator
+    chat_history = ""
     if history:
         history_reversed = list(reversed(history))
         for h in history_reversed:
-            chat_context += f"User: {h.user_message}\n"
-            chat_context += f"Assistant: {h.bot_response}\n"
+            chat_history += f"User: {h.user_message}\n"
+            chat_history += f"Assistant: {h.bot_response}\n"
 
-    # combine chat history with current question
-    # this helps retriever find relevant chunks
-    # even for vague follow up questions
+    # enrich query with context for retriever
     enriched_query = request.message
-    if chat_context:
+    if chat_history:
         enriched_query = (
-            f"Previous conversation:\n{chat_context}\n"
+            f"Previous context:\n{chat_history}\n"
             f"Current question: {request.message}"
         )
 
-    # retrieve relevant chunks from ChromaDB
+    # retrieve chunks using enriched query
     chunks = retrieve_chunks(enriched_query)
 
-    # generate answer using Groq
-    result = generate_answer(request.message, chunks)
+    # generate answer with chat history for context
+    result = generate_answer(
+        request.message,
+        chunks,
+        chat_history
+    )
 
-    # save conversation to PostgreSQL
+    # save to PostgreSQL
     conversation = Conversation(
         session_id   = request.session_id,
         user_message = request.message,
@@ -79,8 +64,6 @@ def chat(request: ChatRequest, db: Session = Depends(get_db)):
     )
     db.add(conversation)
     db.commit()
-
-    log.info(f"✅ Chat saved — session: {request.session_id}")
 
     return ChatResponse(
         session_id = request.session_id,
@@ -95,7 +78,6 @@ def chat(request: ChatRequest, db: Session = Depends(get_db)):
             response_model=HistoryResponse)
 def get_history(session_id: str,
                 db: Session = Depends(get_db)):
-    # returns full chat history for a session
     conversations = db.query(Conversation)\
         .filter(Conversation.session_id == session_id)\
         .order_by(Conversation.created_at.asc())\
@@ -110,10 +92,8 @@ def get_history(session_id: str,
 @router.delete("/history/{session_id}")
 def clear_history(session_id: str,
                   db: Session = Depends(get_db)):
-    # deletes all messages of a session
     db.query(Conversation)\
         .filter(Conversation.session_id == session_id)\
         .delete()
     db.commit()
-
     return {"message": f"History cleared for {session_id}"}
