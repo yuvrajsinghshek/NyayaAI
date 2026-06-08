@@ -59,6 +59,7 @@ def format_context(chunks):
 def build_prompt(user_question, context, chat_history=""):
     # strict prompt — prevents hallucination
     # includes chat history for context awareness
+    # responds in same language as user question
     history_section = ""
     if chat_history:
         history_section = f"""
@@ -76,8 +77,11 @@ STRICT RULES:
 3. If context does not have enough info — say so clearly
 4. Keep answer clear — 3 to 5 sentences maximum
 5. Do not say "according to the context" or "the document says"
-6. Answer in a helpful and professional tone
-7. If question refers to previous conversation use that context
+6. Answer in the SAME LANGUAGE as the user question
+7. If user asks in Hinglish — respond in Hinglish
+8. If user asks in Hindi — respond in Hindi
+9. If user asks in English — respond in English
+10. If question refers to previous conversation use that context
 {history_section}
 CONTEXT:
 {context}
