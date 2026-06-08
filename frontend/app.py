@@ -1,38 +1,39 @@
 # ============================================
 # NyayaAI — Main Streamlit App
-# Entry point for the chatbot frontend
-# Run with: streamlit run frontend/app.py
+# Now calls FastAPI backend
+# Chat history maintained via session state
+# Context passed to RAG for follow up questions
 # ============================================
 
 import streamlit as st
-import sys
-from pathlib import Path
-# ensure the root directory is in sys.path so we can import 'ai'
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
+import requests
+import uuid
 from ai.config import APP_NAME, validate_config
-from ai.rag.retriever import retrieve_chunks
-from ai.rag.generator import generate_answer
 from frontend.components.sidebar import render_sidebar
 from frontend.components.chat import render_chat_history, render_answer
 
-# ── Page Config ───────────────────────────────────────
-# must be first Streamlit command in the file
+# FastAPI backend URL
+API_URL = "http://localhost:8000/chat/"
+
+# page config — must be first Streamlit command
 st.set_page_config(
     page_title = f"{APP_NAME} — Cybercrime Awareness",
     page_icon  = "⚖️",
     layout     = "wide"
 )
 
-# ── Validate Config ───────────────────────────────────
-# check all required keys present at startup
+# validate config at startup
 validate_config()
 
 # ── Session State ─────────────────────────────────────
-# session state persists data across reruns
-# messages stores full chat history
+# messages — full chat history for display
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# session_id — unique id for this chat session
+# used to fetch history from PostgreSQL
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
 
 # ── Sidebar ───────────────────────────────────────────
 render_sidebar()
@@ -43,7 +44,6 @@ st.caption("Your Cybercrime Awareness Assistant")
 st.divider()
 
 # ── Welcome Message ───────────────────────────────────
-# shown only when chat is empty
 if not st.session_state.messages:
     st.info(
         "👋 Welcome to NyayaAI! Ask me anything about:\n"
@@ -54,56 +54,68 @@ if not st.session_state.messages:
         "- Cybercrime prevention tips"
     )
 
-# ── Chat History ──────────────────────────────────────
-# display all previous messages
+# ── Chat History Display ──────────────────────────────
 render_chat_history(st.session_state.messages)
 
 # ── Chat Input ────────────────────────────────────────
-# st.chat_input shows input box at bottom of page
-# returns None if user has not typed anything
-user_question = st.chat_input(
-    "Ask me about cybercrime..."
-)
+user_question = st.chat_input("Ask me about cybercrime...")
 
 if user_question:
-    # add user message to chat history
+    # add user message to display
     st.session_state.messages.append({
         "role"   : "user",
         "content": user_question
     })
 
-    # display user message immediately
     with st.chat_message("user"):
         st.markdown(user_question)
 
-    # show loading spinner while generating answer
     with st.chat_message("assistant"):
         with st.spinner("Searching knowledge base..."):
+            try:
+                # call FastAPI backend
+                # sends session_id for history tracking
+                response = requests.post(
+                    API_URL,
+                    json = {
+                        "session_id": st.session_state.session_id,
+                        "message"   : user_question
+                    },
+                    timeout = 30
+                )
 
-            # step 1 — retrieve relevant chunks from ChromaDB
-            chunks = retrieve_chunks(user_question)
+                if response.status_code == 200:
+                    result = response.json()
+                else:
+                    result = {
+                        "answer"  : "Sorry, something went wrong. Please try again.",
+                        "source"  : None,
+                        "category": None,
+                        "found"   : False
+                    }
 
-            # step 2 — generate answer using Groq
-            result = generate_answer(user_question, chunks)
+            except requests.exceptions.ConnectionError:
+                # backend not running
+                result = {
+                    "answer"  : "Backend server not running. Please start FastAPI first.",
+                    "source"  : None,
+                    "category": None,
+                    "found"   : False
+                }
 
         # display answer
         st.markdown(result["answer"])
 
-        # show source and category if answer was found
-        if result["found"] and result["source"]:
+        # show source and category if found
+        if result.get("found") and result.get("source"):
             st.divider()
             col1, col2 = st.columns(2)
-
             with col1:
-                st.caption(
-                    f"📁 **Source:** {result['source']}"
-                )
+                st.caption(f"📁 **Source:** {result['source']}")
             with col2:
-                st.caption(
-                    f"🏷️ **Category:** {result['category']}"
-                )
+                st.caption(f"🏷️ **Category:** {result['category']}")
 
-    # add assistant message to chat history
+    # save to display history
     st.session_state.messages.append(
         render_answer(result)
     )
