@@ -114,10 +114,17 @@ USER QUESTION:
 ANSWER:"""
 
 
-def generate_answer(user_question, chunks, chat_history=""):
+def generate_answer(user_question, chunks, 
+                    chat_history="", user_name=None):
+    # handle greetings — use name only for greetings
     if is_greeting(user_question):
+        if user_name:
+            greeting = f"Hello, {user_name}! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?"
+        else:
+            greeting = "Hello! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?"
+        
         return {
-            "answer"  : "Hello! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?",
+            "answer"  : greeting,
             "source"  : None,
             "category": None,
             "found"   : True
