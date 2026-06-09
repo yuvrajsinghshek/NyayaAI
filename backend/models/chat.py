@@ -1,54 +1,32 @@
 # ============================================
-# NyayaAI — Chat Database Model
-# Defines conversations table in PostgreSQL
-# Each row = one message exchange
-# Stores question, answer, category, source
+# NyayaAI — Conversation Model
+# Updated to include user_id
+# Links each message to a user
 # ============================================
 
-from sqlalchemy import Column, String, Text, DateTime, Integer
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from backend.database.db import Base
 import uuid
 
 
 def generate_uuid():
-    # generates unique id for each message
     return str(uuid.uuid4())
 
 
 class Conversation(Base):
-    # table name in PostgreSQL
     __tablename__ = "conversations"
 
-    # unique id for each message — auto generated
-    id = Column(
-        String,
-        primary_key = True,
-        default     = generate_uuid
-    )
-
-    # session id groups messages of one chat session
-    # same user ke saare messages ek session_id share karte hain
-    session_id = Column(String, nullable=False, index=True)
-
-    # user ka question
+    id           = Column(String, primary_key=True, default=generate_uuid)
+    user_id      = Column(String, ForeignKey("users.id"), nullable=True)
+    session_id   = Column(String, nullable=False, index=True)
     user_message = Column(Text, nullable=False)
-
-    # bot ka answer
     bot_response = Column(Text, nullable=False)
-
-    # category detected by RAG pipeline
-    category = Column(String, nullable=True)
-
-    # source PDF or FAQ name
-    source = Column(String, nullable=True)
-
-    # was answer found in knowledge base or out of scope
+    category     = Column(String, nullable=True)
+    source       = Column(String, nullable=True)
     answer_found = Column(String, nullable=True)
+    created_at   = Column(DateTime, server_default=func.now())
 
-    # timestamp — automatically set when record created
-    created_at = Column(
-        DateTime,
-        server_default = func.now(),
-        nullable       = False
-    )
+    # relationship with user
+    user = relationship("User", back_populates="chats")
