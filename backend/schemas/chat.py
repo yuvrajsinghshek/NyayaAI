@@ -12,8 +12,9 @@ from datetime import datetime
 
 class ChatRequest(BaseModel):
     # what frontend sends to API
-    session_id : str       # unique session identifier
-    message    : str       # user ka question
+    session_id : str
+    message    : str
+    user_id    : Optional[str] = None  # for personalization
 
 
 class ChatResponse(BaseModel):
