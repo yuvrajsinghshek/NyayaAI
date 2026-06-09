@@ -97,6 +97,18 @@ DATABASE_URL = (
     f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
+# ── JWT Settings ──────────────────────────────────────
+SECRET_KEY                  = os.getenv("SECRET_KEY", "nyayaai_secret")
+ALGORITHM                   = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 10080))
+
+# ── Email Settings ────────────────────────────────────
+MAIL_USERNAME = os.getenv("MAIL_USERNAME", "")
+MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "")
+MAIL_FROM     = os.getenv("MAIL_FROM", "")
+MAIL_SERVER   = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
+
 # ── Validation ────────────────────────────────────────
 # called at startup to check all required keys present
 # fails early rather than failing silently later
