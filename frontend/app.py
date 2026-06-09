@@ -1,8 +1,7 @@
 # ============================================
 # NyayaAI — Main Streamlit App
-# Now calls FastAPI backend
-# Chat history maintained via session state
-# Context passed to RAG for follow up questions
+# Auth flow — login/register before chat
+# Chat with context memory via FastAPI
 # ============================================
 
 import streamlit as st
@@ -11,42 +10,62 @@ import uuid
 from ai.config import APP_NAME, validate_config
 from frontend.components.sidebar import render_sidebar
 from frontend.components.chat import render_chat_history, render_answer
+from frontend.pages.login import render_login_page
+from frontend.pages.register import render_register_page
 
-# FastAPI backend URL
 API_URL = "http://localhost:8000/chat/"
 
-# page config — must be first Streamlit command
+# page config
 st.set_page_config(
     page_title = f"{APP_NAME} — Cybercrime Awareness",
     page_icon  = "⚖️",
     layout     = "wide"
 )
 
-# validate config at startup
+# validate config
 validate_config()
 
-# ── Session State ─────────────────────────────────────
-# messages — full chat history for display
+# ── Session State Init ────────────────────────────────
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "page" not in st.session_state:
+    st.session_state.page = "login"
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# session_id — unique id for this chat session
-# used to fetch history from PostgreSQL
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
-# ── Sidebar ───────────────────────────────────────────
+if "chat_sessions" not in st.session_state:
+    st.session_state.chat_sessions = [{
+        "session_id": st.session_state.session_id,
+        "title"     : "Chat 1",
+        "preview"   : "New conversation"
+    }]
+
+# ── Auth Flow ─────────────────────────────────────────
+# show login or register if not logged in
+if not st.session_state.logged_in:
+    if st.session_state.page == "login":
+        render_login_page()
+    elif st.session_state.page == "register":
+        render_register_page()
+    st.stop()
+
+# ── Logged In — Show Chat ─────────────────────────────
 render_sidebar()
 
-# ── Main Header ───────────────────────────────────────
 st.title("⚖️ NyayaAI")
 st.caption("Your Cybercrime Awareness Assistant")
 st.divider()
 
-# ── Welcome Message ───────────────────────────────────
+# welcome message
 if not st.session_state.messages:
+    user_name = st.session_state.get("user_name", "")
     st.info(
-        "👋 Welcome to NyayaAI! Ask me anything about:\n"
+        f"👋 Welcome, {user_name}! Ask me anything about:\n"
         "- Digital arrest scams\n"
         "- Banking fraud and money mules\n"
         "- How to report cybercrime\n"
@@ -54,41 +73,13 @@ if not st.session_state.messages:
         "- Cybercrime prevention tips"
     )
 
-# ── Load History From API When Session Changes ────────
-# when user switches chat — load history from PostgreSQL
-if not st.session_state.messages:
-    try:
-        history_response = requests.get(
-            f"http://localhost:8000/chat/history/"
-            f"{st.session_state.session_id}",
-            timeout = 5
-        )
-        if history_response.status_code == 200:
-            history_data = history_response.json()
-            for conv in history_data.get("conversations", []):
-                # add user message
-                st.session_state.messages.append({
-                    "role"   : "user",
-                    "content": conv["user_message"]
-                })
-                # add bot response
-                st.session_state.messages.append({
-                    "role"    : "assistant",
-                    "content" : conv["bot_response"],
-                    "source"  : conv.get("source"),
-                    "category": conv.get("category")
-                })
-    except Exception:
-        pass
-
-# ── Chat History Display ──────────────────────────────
+# chat history
 render_chat_history(st.session_state.messages)
 
-# ── Chat Input ────────────────────────────────────────
+# chat input
 user_question = st.chat_input("Ask me about cybercrime...")
 
 if user_question:
-    # add user message to display
     st.session_state.messages.append({
         "role"   : "user",
         "content": user_question
@@ -100,13 +91,12 @@ if user_question:
     with st.chat_message("assistant"):
         with st.spinner("Searching knowledge base..."):
             try:
-                # call FastAPI backend
-                # sends session_id for history tracking
                 response = requests.post(
                     API_URL,
                     json = {
                         "session_id": st.session_state.session_id,
-                        "message"   : user_question
+                        "message"   : user_question,
+                        "user_id"   : st.session_state.get("user_id")
                     },
                     timeout = 30
                 )
@@ -122,7 +112,6 @@ if user_question:
                     }
 
             except requests.exceptions.ConnectionError:
-                # backend not running
                 result = {
                     "answer"  : "Backend server not running. Please start FastAPI first.",
                     "source"  : None,
@@ -130,10 +119,8 @@ if user_question:
                     "found"   : False
                 }
 
-        # display answer
         st.markdown(result["answer"])
 
-        # show source and category if found
         if result.get("found") and result.get("source"):
             st.divider()
             col1, col2 = st.columns(2)
@@ -142,7 +129,4 @@ if user_question:
             with col2:
                 st.caption(f"🏷️ **Category:** {result['category']}")
 
-    # save to display history
-    st.session_state.messages.append(
-        render_answer(result)
-    )
+    st.session_state.messages.append(render_answer(result))
