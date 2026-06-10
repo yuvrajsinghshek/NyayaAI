@@ -31,7 +31,6 @@ def render_register_page():
     )
     st.divider()
 
-    # ── Step 1 ────────────────────────────────────────
     if st.session_state.register_step == 1:
         st.subheader("Step 1 — Account Details")
 
@@ -61,7 +60,6 @@ def render_register_page():
                         },
                         timeout = 10
                     )
-                    # safe json parsing
                     try:
                         data = response.json()
                     except Exception:
@@ -81,7 +79,6 @@ def render_register_page():
                 except Exception as e:
                     st.error(f"Something went wrong: {str(e)}")
 
-    # ── Step 2 ────────────────────────────────────────
     elif st.session_state.register_step == 2:
         st.subheader("Step 2 — Verify Email")
         st.info(f"OTP sent to: {st.session_state.reg_email}")
@@ -128,7 +125,6 @@ def render_register_page():
             except Exception:
                 st.error("Something went wrong")
 
-    # ── Step 3 ────────────────────────────────────────
     elif st.session_state.register_step == 3:
         st.subheader("Step 3 — Tell us about yourself")
 
