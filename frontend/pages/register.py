@@ -1,11 +1,3 @@
-# ============================================
-# NyayaAI — Register Page
-# 3 steps:
-# Step 1 — Email and password
-# Step 2 — Verify OTP
-# Step 3 — Basic info name age city state
-# ============================================
-
 import streamlit as st
 import requests
 
@@ -29,11 +21,9 @@ def render_register_page():
     st.subheader("Create your account")
     st.divider()
 
-    # initialize register step
     if "register_step" not in st.session_state:
         st.session_state.register_step = 1
 
-    # step indicator
     steps = ["Account Details", "Verify Email", "Your Info"]
     st.progress(
         (st.session_state.register_step - 1) / 2,
@@ -41,24 +31,18 @@ def render_register_page():
     )
     st.divider()
 
-    # ── Step 1 — Email Password ───────────────────────
+    # ── Step 1 ────────────────────────────────────────
     if st.session_state.register_step == 1:
         st.subheader("Step 1 — Account Details")
 
-        email    = st.text_input(
-            "Email",
-            placeholder = "your@email.com"
-        )
-        password = st.text_input(
-            "Password",
-            type        = "password",
-            placeholder = "Min 6 characters"
-        )
-        confirm  = st.text_input(
-            "Confirm Password",
-            type        = "password",
-            placeholder = "Repeat password"
-        )
+        email    = st.text_input("Email",
+                    placeholder="your@email.com")
+        password = st.text_input("Password",
+                    type="password",
+                    placeholder="Min 6 characters")
+        confirm  = st.text_input("Confirm Password",
+                    type="password",
+                    placeholder="Repeat password")
 
         if st.button("Send OTP", use_container_width=True):
             if not email or not password or not confirm:
@@ -77,28 +61,33 @@ def render_register_page():
                         },
                         timeout = 10
                     )
+                    # safe json parsing
+                    try:
+                        data = response.json()
+                    except Exception:
+                        data = {}
+
                     if response.status_code == 200:
-                        st.session_state.reg_email        = email
-                        st.session_state.register_step    = 2
+                        st.session_state.reg_email     = email
+                        st.session_state.register_step = 2
                         st.success("OTP sent to your email!")
                         st.rerun()
                     else:
-                        error = response.json().get(
-                            "detail", "Registration failed"
-                        )
+                        error = data.get("detail", "Registration failed")
                         st.error(error)
+
                 except requests.exceptions.ConnectionError:
                     st.error("Backend not running")
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
 
-    # ── Step 2 — Verify OTP ───────────────────────────
+    # ── Step 2 ────────────────────────────────────────
     elif st.session_state.register_step == 2:
         st.subheader("Step 2 — Verify Email")
         st.info(f"OTP sent to: {st.session_state.reg_email}")
 
-        otp = st.text_input(
-            "Enter OTP",
-            placeholder = "6 digit OTP"
-        )
+        otp = st.text_input("Enter OTP",
+                placeholder="6 digit OTP")
 
         if st.button("Verify OTP", use_container_width=True):
             if not otp:
@@ -113,17 +102,20 @@ def render_register_page():
                         },
                         timeout = 10
                     )
+                    try:
+                        data = response.json()
+                    except Exception:
+                        data = {}
+
                     if response.status_code == 200:
                         st.session_state.register_step = 3
                         st.success("Email verified!")
                         st.rerun()
                     else:
-                        error = response.json().get(
-                            "detail", "Invalid OTP"
-                        )
+                        error = data.get("detail", "Invalid OTP")
                         st.error(error)
-                except Exception:
-                    st.error("Something went wrong")
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
 
         if st.button("Resend OTP", use_container_width=True):
             try:
@@ -136,28 +128,20 @@ def render_register_page():
             except Exception:
                 st.error("Something went wrong")
 
-    # ── Step 3 — Basic Info ───────────────────────────
+    # ── Step 3 ────────────────────────────────────────
     elif st.session_state.register_step == 3:
         st.subheader("Step 3 — Tell us about yourself")
 
-        name  = st.text_input(
-            "Full Name",
-            placeholder = "Your name"
-        )
-        age   = st.number_input(
-            "Age",
-            min_value = 10,
-            max_value = 100,
-            value     = 25
-        )
-        city  = st.text_input(
-            "City",
-            placeholder = "Your city"
-        )
-        state = st.selectbox(
-            "State",
-            options = ["Select State"] + INDIAN_STATES
-        )
+        name  = st.text_input("Full Name",
+                    placeholder="Your name")
+        age   = st.number_input("Age",
+                    min_value=10,
+                    max_value=100,
+                    value=25)
+        city  = st.text_input("City",
+                    placeholder="Your city")
+        state = st.selectbox("State",
+                    options=["Select State"] + INDIAN_STATES)
 
         if st.button("Complete Registration",
                      use_container_width=True):
@@ -178,24 +162,25 @@ def render_register_page():
                         },
                         timeout = 10
                     )
-                    if response.status_code == 200:
+                    try:
                         data = response.json()
-                        # auto login after registration
-                        st.session_state.logged_in    = True
-                        st.session_state.user_id      = data["user_id"]
-                        st.session_state.user_name    = data["name"]
-                        st.session_state.access_token = data["access_token"]
-                        st.session_state.messages     = []
+                    except Exception:
+                        data = {}
+
+                    if response.status_code == 200:
+                        st.session_state.logged_in     = True
+                        st.session_state.user_id       = data.get("user_id")
+                        st.session_state.user_name     = data.get("name")
+                        st.session_state.access_token  = data.get("access_token")
+                        st.session_state.messages      = []
                         st.session_state.register_step = 1
                         st.success(f"Welcome to NyayaAI, {name}!")
                         st.rerun()
                     else:
-                        error = response.json().get(
-                            "detail", "Failed"
-                        )
+                        error = data.get("detail", "Failed")
                         st.error(error)
-                except Exception:
-                    st.error("Something went wrong")
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
 
     st.divider()
     st.markdown("Already have an account?")
