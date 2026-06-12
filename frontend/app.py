@@ -59,6 +59,17 @@ render_sidebar()
 
 st.title("⚖️ NyayaAI")
 st.caption("Your Cybercrime Awareness Assistant")
+
+# made by footer
+st.markdown(
+    """
+    <div style='position: fixed; bottom: 10px; right: 15px; 
+    color: gray; font-size: 12px; z-index: 999;'>
+    Made by <b>Yuvraj Singh Shekhawat</b> — AI/ML Engineer
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 st.divider()
 
 # welcome message
