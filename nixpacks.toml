@@ -1,12 +1,11 @@
 [phases.setup]
-nixPkgs = ["python311", "python311Packages.pip"]
+nixPkgs = ["python311"]
 
 [phases.install]
 cmds = [
-  "pip install --upgrade pip",
-  "pip install -r requirements.txt",
-  "pip install -e ."
+  "pip install -r requirements.txt --break-system-packages",
+  "pip install -e . --break-system-packages"
 ]
 
 [start]
-cmd = "python3.11 -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
