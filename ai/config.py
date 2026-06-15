@@ -92,10 +92,21 @@ DB_USER     = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
 # full database URL for SQLAlchemy
-DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+# use Railway DATABASE_URL if available
+# fallback to individual vars for local
+DATABASE_URL = os.getenv("DATABASE_URL", None)
+
+if not DATABASE_URL:
+    DATABASE_URL = (
+        f"postgresql://{DB_USER}:{DB_PASSWORD}"
+        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+
+# Railway uses postgres:// fix to postgresql://
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgres://", "postgresql://", 1
+    )
 
 # ── JWT Settings ──────────────────────────────────────
 SECRET_KEY                  = os.getenv("SECRET_KEY", "nyayaai_secret")
