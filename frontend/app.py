@@ -13,7 +13,8 @@ from frontend.components.chat import render_chat_history, render_answer
 from frontend.pages.login import render_login_page
 from frontend.pages.register import render_register_page
 
-API_URL = "http://localhost:8000/chat/"
+import os
+API_URL = os.getenv("API_URL", "http://localhost:8000/chat/")
 
 # page config
 st.set_page_config(
