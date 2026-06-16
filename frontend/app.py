@@ -1,32 +1,18 @@
-# ============================================
-# NyayaAI — Main Streamlit App
-# Auth flow — login/register before chat
-# Chat with context memory via FastAPI
-# ============================================
-
 import streamlit as st
 import requests
 import uuid
-from ai.config import APP_NAME, validate_config
-from frontend.components.sidebar import render_sidebar
-from frontend.components.chat import render_chat_history, render_answer
-from frontend.pages.login import render_login_page
-from frontend.pages.register import render_register_page
-
 import os
-API_URL = os.getenv("API_URL", "http://localhost:8000/chat/")
 
-# page config
+API_URL     = os.getenv("API_URL", "http://localhost:8000/chat/")
+APP_NAME    = os.getenv("APP_NAME", "NyayaAI")
+APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
+
 st.set_page_config(
     page_title = f"{APP_NAME} — Cybercrime Awareness",
     page_icon  = "⚖️",
     layout     = "wide"
 )
 
-# validate config
-validate_config()
-
-# ── Session State Init ────────────────────────────────
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -46,22 +32,22 @@ if "chat_sessions" not in st.session_state:
         "preview"   : "New conversation"
     }]
 
-# ── Auth Flow ─────────────────────────────────────────
-# show login or register if not logged in
 if not st.session_state.logged_in:
     if st.session_state.page == "login":
+        from frontend.pages.login import render_login_page
         render_login_page()
     elif st.session_state.page == "register":
+        from frontend.pages.register import render_register_page
         render_register_page()
     st.stop()
 
-# ── Logged In — Show Chat ─────────────────────────────
+from frontend.components.sidebar import render_sidebar
+from frontend.components.chat import render_chat_history, render_answer
 render_sidebar()
 
 st.title("⚖️ NyayaAI")
 st.caption("Your Cybercrime Awareness Assistant")
 
-# made by footer
 st.markdown(
     """
     <div style='position: fixed; bottom: 10px; right: 15px; 
@@ -71,9 +57,9 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 st.divider()
 
-# welcome message
 if not st.session_state.messages:
     user_name = st.session_state.get("user_name", "")
     st.info(
@@ -85,10 +71,8 @@ if not st.session_state.messages:
         "- Cybercrime prevention tips"
     )
 
-# chat history
 render_chat_history(st.session_state.messages)
 
-# chat input
 user_question = st.chat_input("Ask me about cybercrime...")
 
 if user_question:
@@ -112,7 +96,6 @@ if user_question:
                     },
                     timeout = 30
                 )
-
                 if response.status_code == 200:
                     result = response.json()
                 else:
@@ -122,10 +105,9 @@ if user_question:
                         "category": None,
                         "found"   : False
                     }
-
             except requests.exceptions.ConnectionError:
                 result = {
-                    "answer"  : "Backend server not running. Please start FastAPI first.",
+                    "answer"  : "Backend server not reachable. Please try again.",
                     "source"  : None,
                     "category": None,
                     "found"   : False
