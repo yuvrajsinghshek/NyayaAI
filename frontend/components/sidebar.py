@@ -3,7 +3,8 @@ import requests
 import uuid
 from ai.config import APP_NAME, APP_VERSION, CATEGORIES
 
-API_URL = "http://localhost:8000/chat"
+import os
+API_URL = os.getenv("API_URL", "http://localhost:8000/chat")
 
 
 def save_current_chat_summary():
