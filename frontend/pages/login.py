@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
 
-API_URL = "http://localhost:8000/auth"
+import os
+API_URL = os.getenv("API_URL_AUTH", "http://localhost:8000/auth")
 
 
 def render_login_page():
