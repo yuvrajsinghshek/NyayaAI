@@ -78,7 +78,7 @@ def register(request: RegisterRequest,
     db.commit()
 
     # send OTP email
-    send_otp_email(request.email, otp, "registration")
+    send_otp_email(request.email, otp)
 
     return AuthResponse(
         message = "OTP sent to your email. Please verify."
@@ -200,7 +200,7 @@ def forgot_password(request: ForgotPasswordRequest,
         user.otp_expiry = expiry
         db.commit()
 
-        send_otp_email(request.email, otp, "reset_password")
+        send_otp_email(request.email, otp)
 
     return AuthResponse(
         message = "If email exists, OTP has been sent."
