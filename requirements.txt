@@ -2,6 +2,7 @@ pymupdf==1.23.8
 chromadb==0.4.22
 sentence-transformers==3.0.1
 groq==0.9.0
+httpx==0.27.0
 streamlit==1.32.0
 python-dotenv==1.0.0
 pandas==2.1.4
