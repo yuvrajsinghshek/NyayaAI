@@ -67,9 +67,10 @@ def render_register_page():
                         data = {}
 
                     if response.status_code == 200:
+                        data = response.json()
                         st.session_state.reg_email     = email
+                        st.session_state.reg_otp       = str(data.get("otp", ""))
                         st.session_state.register_step = 2
-                        st.success("OTP sent! Check your email in 1-2 minutes.")
                         st.rerun()
                     elif response.status_code == 400 and "already registered" in data.get("detail", "").lower():
                         st.session_state.reg_email     = email
@@ -88,6 +89,8 @@ def render_register_page():
     elif st.session_state.register_step == 2:
         st.subheader("Step 2 — Verify Email")
         st.info(f"OTP sent to: {st.session_state.reg_email}")
+        if st.session_state.get("reg_otp"):
+            st.warning(f"Your OTP: {st.session_state.reg_otp}")
 
         otp = st.text_input("Enter OTP",
                 placeholder="6 digit OTP")
