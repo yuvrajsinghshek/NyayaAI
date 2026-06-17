@@ -33,6 +33,7 @@ from backend.utils.otp import (
 )
 from backend.utils.email import send_otp_email
 import logging
+from datetime import datetime, timedelta
 
 log    = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -43,12 +44,23 @@ def register(request: RegisterRequest,
              db: Session = Depends(get_db)):
     # check if email already registered
     existing = db.query(User)\
-        .filter(User.email == request.email).first()
-    if existing:
+        .filter(User.email == request.email)\
+        .first()
+
+    if existing and existing.is_verified:
         raise HTTPException(
             status_code = 400,
             detail      = "Email already registered"
         )
+
+    if existing and not existing.is_verified:
+        # resend OTP for unverified user
+        otp = generate_otp()
+        existing.otp        = otp
+        existing.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
+        db.commit()
+        send_otp_email(existing.email, otp)
+        return {"message": "OTP resent to your email"}
 
     # generate OTP and send email
     otp    = generate_otp()
