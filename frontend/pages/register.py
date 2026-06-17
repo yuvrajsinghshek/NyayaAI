@@ -90,7 +90,7 @@ def render_register_page():
         st.subheader("Step 2 — Verify Email")
         st.info(f"OTP sent to: {st.session_state.reg_email}")
         if st.session_state.get("reg_otp"):
-            st.warning(f"Your OTP: {st.session_state.reg_otp}")
+            st.success(f"🔐 Your OTP: **{st.session_state.reg_otp}**")
 
         otp = st.text_input("Enter OTP",
                 placeholder="6 digit OTP")
