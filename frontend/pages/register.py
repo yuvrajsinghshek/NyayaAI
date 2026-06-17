@@ -59,7 +59,7 @@ def render_register_page():
                             "email"   : email,
                             "password": password
                         },
-                        timeout = 10
+                        timeout = 30
                     )
                     try:
                         data = response.json()
@@ -98,7 +98,7 @@ def render_register_page():
                             "email": st.session_state.reg_email,
                             "otp"  : otp
                         },
-                        timeout = 10
+                        timeout = 30
                     )
                     try:
                         data = response.json()
@@ -120,7 +120,7 @@ def render_register_page():
                 requests.post(
                     f"{API_URL}/forgot-password",
                     json    = {"email": st.session_state.reg_email},
-                    timeout = 10
+                    timeout = 30
                 )
                 st.success("OTP resent!")
             except Exception:
@@ -157,7 +157,7 @@ def render_register_page():
                             "city" : city,
                             "state": state
                         },
-                        timeout = 10
+                        timeout = 30
                     )
                     try:
                         data = response.json()
