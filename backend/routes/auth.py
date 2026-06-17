@@ -190,6 +190,7 @@ def forgot_password(request: ForgotPasswordRequest,
 
     # always return success — security best practice
     # dont reveal if email exists or not
+    otp = ""
     if user:
         otp    = generate_otp()
         expiry = get_otp_expiry()
@@ -200,9 +201,7 @@ def forgot_password(request: ForgotPasswordRequest,
 
         send_otp_email(request.email, otp)
 
-    return AuthResponse(
-        message = "If email exists, OTP has been sent."
-    )
+    return {"message": "OTP sent", "otp": otp}
 
 
 @router.post("/reset-password", response_model=AuthResponse)
