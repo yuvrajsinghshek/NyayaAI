@@ -1,7 +1,7 @@
 pymupdf==1.23.8
 chromadb==0.4.22
-sentence-transformers==2.7.0
-groq==0.4.2
+sentence-transformers==3.0.1
+groq==0.9.0
 streamlit==1.32.0
 python-dotenv==1.0.0
 pandas==2.1.4
@@ -15,4 +15,3 @@ python-multipart==0.0.9
 werkzeug==3.0.1
 pydantic[email]==2.6.1
 requests==2.31.0
-huggingface-hub==0.21.0
