@@ -69,7 +69,12 @@ def render_register_page():
                     if response.status_code == 200:
                         st.session_state.reg_email     = email
                         st.session_state.register_step = 2
-                        st.success("OTP sent to your email!")
+                        st.success("OTP sent! Check your email in 1-2 minutes.")
+                        st.rerun()
+                    elif response.status_code == 400 and "already registered" in data.get("detail", "").lower():
+                        st.session_state.reg_email     = email
+                        st.session_state.register_step = 2
+                        st.info("Email already registered. OTP sent again — check your email.")
                         st.rerun()
                     else:
                         error = data.get("detail", "Registration failed")
