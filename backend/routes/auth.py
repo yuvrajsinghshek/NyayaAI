@@ -60,7 +60,7 @@ def register(request: RegisterRequest,
         existing.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
         db.commit()
         send_otp_email(existing.email, otp)
-        return {"message": "OTP resent to your email"}
+        return {"message": "OTP sent", "otp": otp}
 
     # generate OTP and send email
     otp    = generate_otp()
@@ -80,9 +80,7 @@ def register(request: RegisterRequest,
     # send OTP email
     send_otp_email(request.email, otp)
 
-    return AuthResponse(
-        message = "OTP sent to your email. Please verify."
-    )
+    return {"message": "OTP sent", "otp": otp}
 
 
 @router.post("/verify-otp", response_model=AuthResponse)
