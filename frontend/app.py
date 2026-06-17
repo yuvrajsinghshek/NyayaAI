@@ -34,15 +34,15 @@ if "chat_sessions" not in st.session_state:
 
 if not st.session_state.logged_in:
     if st.session_state.page == "login":
-        from frontend.pages.login import render_login_page
+        from pages.login import render_login_page
         render_login_page()
     elif st.session_state.page == "register":
-        from frontend.pages.register import render_register_page
+        from pages.register import render_register_page
         render_register_page()
     st.stop()
 
-from frontend.components.sidebar import render_sidebar
-from frontend.components.chat import render_chat_history, render_answer
+from components.sidebar import render_sidebar
+from components.chat import render_chat_history, render_answer
 render_sidebar()
 
 st.title("⚖️ NyayaAI")
