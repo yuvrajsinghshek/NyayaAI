@@ -15,4 +15,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python ai/ingest/ingest_pipeline.py && uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "PYTHONPATH=/app python ai/ingest/ingest_pipeline.py && uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
