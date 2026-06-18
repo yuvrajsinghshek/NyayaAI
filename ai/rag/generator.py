@@ -131,12 +131,26 @@ def generate_answer(user_question, chunks,
         }
 
     if not chunks:
-        log.info(f"No chunks found for: {user_question}")
+        result = client.chat.completions.create(
+            model    = GROQ_MODEL,
+            messages = [
+                {
+                    "role"   : "system",
+                    "content": "You are NyayaAI, a cybercrime awareness assistant for Indian citizens."
+                },
+                {
+                    "role"   : "user",
+                    "content": user_question
+                }
+            ],
+            temperature = 0.7,
+            max_tokens  = 500
+        )
         return {
-            "answer"  : OUT_OF_SCOPE_MESSAGE,
+            "answer"  : result.choices[0].message.content,
             "source"  : None,
-            "category": None,
-            "found"   : False
+            "category": "General",
+            "found"   : True
         }
 
     context = format_context(chunks)
