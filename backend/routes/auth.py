@@ -70,7 +70,7 @@ def register(request: RegisterRequest,
     user = User(
         email      = request.email,
         password   = hash_password(request.password),
-        is_verified = False,
+        is_verified = True,
         otp        = otp,
         otp_expiry = expiry
     )
