@@ -77,20 +77,23 @@ def render_login_page():
                     st.error("Please enter email")
                 else:
                     try:
-                        requests.post(
+                        response = requests.post(
                             f"{API_URL}/forgot-password",
                             json    = {"email": forgot_email},
                             timeout = 10
                         )
                         st.session_state.forgot_email = forgot_email
-                        st.session_state.forgot_step  = 2
-                        st.success("OTP sent to your email!")
+                        otp_data = response.json()
+                        st.session_state.forgot_otp = str(otp_data.get("otp", ""))
+                        st.session_state.forgot_step = 2
                         st.rerun()
                     except Exception:
                         st.error("Something went wrong")
 
         elif st.session_state.forgot_step == 2:
             st.info(f"OTP sent to: {st.session_state.forgot_email}")
+            if st.session_state.get("forgot_otp"):
+                st.success(f"🔐 Your OTP: **{st.session_state.forgot_otp}**")
             otp          = st.text_input("Enter OTP")
             new_password = st.text_input("New Password",
                             type="password")
