@@ -1,7 +1,19 @@
 import streamlit as st
 import requests
 import uuid
-from ai.config import APP_NAME, APP_VERSION, CATEGORIES
+import os
+APP_NAME    = os.getenv("APP_NAME", "NyayaAI")
+APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
+CATEGORIES  = [
+    "Digital Arrest",
+    "Banking Fraud",
+    "Illegal Loan Apps",
+    "OTP Fraud",
+    "Cybercrime Reporting",
+    "Social Media Fraud",
+    "Identity Theft",
+    "General Cybercrime"
+]
 
 import os
 API_URL = os.getenv("API_URL", "http://localhost:8000/chat")
