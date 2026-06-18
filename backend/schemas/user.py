@@ -46,6 +46,7 @@ class ResetPasswordRequest(BaseModel):
 
 class AuthResponse(BaseModel):
     message      : str
+    otp          : Optional[str] = None
     access_token : Optional[str] = None
     user_id      : Optional[str] = None
     name         : Optional[str] = None
