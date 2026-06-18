@@ -67,10 +67,8 @@ def render_register_page():
                         data = {}
 
                     if response.status_code == 200:
-                        data = response.json()
                         st.session_state.reg_email     = email
-                        st.session_state.reg_otp       = str(data.get("otp", ""))
-                        st.session_state.register_step = 2
+                        st.session_state.register_step = 3
                         st.rerun()
                     elif response.status_code == 400 and "already registered" in data.get("detail", "").lower():
                         st.session_state.reg_email     = email
