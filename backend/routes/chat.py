@@ -98,7 +98,11 @@ def chat(request: ChatRequest, db: Session = Depends(get_db)):
         )
 
     # retrieve and generate
-    chunks = retrieve_chunks(enriched_query)
+    try:
+        chunks = retrieve_chunks(enriched_query)
+    except Exception as e:
+        log.error(f"ChromaDB error: {e}")
+        chunks = []
     result = generate_answer(
         request.message,
         chunks,
