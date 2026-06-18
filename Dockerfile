@@ -8,6 +8,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN mkdir -p ai/data/chroma_db
+
 ENV PYTHONPATH=/app
 ENV PORT=8000
 
