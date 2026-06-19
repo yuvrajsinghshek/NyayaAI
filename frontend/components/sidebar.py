@@ -5,14 +5,16 @@ import os
 APP_NAME    = os.getenv("APP_NAME", "NyayaAI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
 CATEGORIES  = [
-    "Digital Arrest",
-    "Banking Fraud",
-    "Illegal Loan Apps",
-    "OTP Fraud",
-    "Cybercrime Reporting",
-    "Social Media Fraud",
-    "Identity Theft",
-    "General Cybercrime"
+    "🔐 Digital Arrest",
+    "🔐 Banking Fraud",
+    "🔐 Illegal Loan Apps",
+    "🔐 OTP Fraud",
+    "🔐 Cybercrime Reporting",
+    "🔐 Social Media Fraud",
+    "🚦 Traffic Violations",
+    "🚦 Motor Vehicles Act",
+    "🚦 Road Accident Guidance",
+    "🚦 CMVR Rules"
 ]
 
 import os
@@ -141,6 +143,7 @@ def render_sidebar():
         # ── Emergency Contacts ────────────────────────
         st.subheader("🆘 Emergency Contacts")
         st.error("📞 Cybercrime Helpline: **1930**")
+        st.error("📞 Road Accident Helpline: **112**")
         st.markdown(
             "🌐 [cybercrime.gov.in]"
             "(https://www.cybercrime.gov.in)"
