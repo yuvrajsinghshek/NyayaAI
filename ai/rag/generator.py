@@ -105,9 +105,9 @@ def generate_answer(user_question, chunks,
     # handle greetings
     if is_greeting(user_question):
         if user_name:
-            greeting = f"Hello, {user_name}! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?"
+            greeting = f"Hello, {user_name}! I am NyayaAI, your legal awareness assistant. I can help you with:\n\n🔐 **Cybercrime Awareness** — Digital arrest scams, banking fraud, illegal loan apps, OTP fraud, how to report cybercrime\n\n🚦 **Road Safety & Traffic Rules** — Motor Vehicles Act, traffic violations, road accident guidance, CMVR rules\n\nWhat would you like to know?"
         else:
-            greeting = "Hello! I am NyayaAI, your cybercrime awareness assistant. I can help you with information about digital arrest scams, banking fraud, illegal loan apps, how to report cybercrime, and much more. What would you like to know?"
+            greeting = "Hello! I am NyayaAI, your legal awareness assistant. I can help you with:\n\n🔐 **Cybercrime Awareness** — Digital arrest scams, banking fraud, illegal loan apps, OTP fraud, how to report cybercrime\n\n🚦 **Road Safety & Traffic Rules** — Motor Vehicles Act, traffic violations, road accident guidance, CMVR rules\n\nWhat would you like to know?"
 
         return {
             "answer"  : greeting,
