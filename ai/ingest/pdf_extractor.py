@@ -28,16 +28,21 @@ def clean_text(text):
 
 
 def get_source_key(filename):
-    # match filename to SOURCE_MAP key
-    # so we know which report this PDF belongs to
     filename_upper = filename.upper()
 
-    if "TAU_397" in filename_upper or "T397" in filename_upper:
+    if "TAU" in filename_upper and "397" in filename_upper:
         return "TAU_397"
-    elif "ADV" in filename_upper or "ADVISORY" in filename_upper:
+    elif "ADV" in filename_upper or "DIGITAL" in filename_upper:
         return "ADV_003"
+    elif "ADSI" in filename_upper or "CHAPTER" in filename_upper:
+        return "ADSI_2024"
+    elif "1988" in filename_upper or "A1988" in filename_upper:
+        return "MVA_1988"
+    elif "CMVR" in filename_upper or "1989" in filename_upper:
+        return "CMVR_1989"
+    elif "AMENDMENT" in filename_upper or "2019" in filename_upper:
+        return "MVA_2019"
     else:
-        # if no match found use filename itself as source key
         return filename.replace(".pdf", "").upper()
 
 
