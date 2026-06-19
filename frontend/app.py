@@ -63,12 +63,17 @@ st.divider()
 if not st.session_state.messages:
     user_name = st.session_state.get("user_name", "")
     st.info(
-        f"👋 Welcome, {user_name}! Ask me anything about:\n"
+        f"👋 Welcome, {user_name}! Ask me anything about:\n\n"
+        "🔐 **Cybercrime:**\n"
         "- Digital arrest scams\n"
         "- Banking fraud and money mules\n"
         "- How to report cybercrime\n"
-        "- Illegal loan apps\n"
-        "- Cybercrime prevention tips"
+        "- Illegal loan apps & OTP fraud\n\n"
+        "🚦 **Road Safety & Traffic:**\n"
+        "- Motor Vehicles Act & Rules\n"
+        "- Traffic violations & penalties\n"
+        "- Road accident guidance\n"
+        "- CMVR 1989 rules"
     )
 
 render_chat_history(st.session_state.messages)
