@@ -119,7 +119,7 @@ def generate_answer(user_question, chunks,
     # no chunks found — out of scope
     if not chunks:
         return {
-            "answer"  : "I don't have specific information about this topic in my knowledge base.\n\nFor cybercrime related help:\n📞 Helpline: 1930\n🌐 Portal: www.cybercrime.gov.in\n📱 Follow: @cyberdost on social media",
+            "answer"  : "I don't have specific information about this topic in my knowledge base.\n\nI can help you with:\n\n🔐 **Cybercrime:**\n📞 Helpline: 1930\n🌐 www.cybercrime.gov.in\n📱 @cyberdost\n\n🚦 **Road Safety & Traffic:**\n📞 Emergency: 112\n🌐 www.morth.nic.in",
             "source"  : None,
             "category": None,
             "found"   : False
