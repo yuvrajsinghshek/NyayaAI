@@ -72,10 +72,16 @@ CATEGORIES = [
 # short key → full readable source name
 # add new entry here when new PDF or FAQ is added
 SOURCE_MAP = {
-    "TAU_397"  : "TAU-397 Monthly Underground Banking Report May 2026",
-    "ADV_003"  : "Advisory TAU-ADV-003 Digital Arrest March 2025",
-    "NCRP_FAQ" : "NCRP FAQ - cybercrime.gov.in",
-    "FAQ2"     : "I4C Cybercrime Advisories Collection"
+    "TAU_397"      : "TAU-397 Monthly Underground Banking Report May 2026",
+    "ADV_003"      : "Advisory TAU-ADV-003 Digital Arrest March 2025",
+    "NCRP_FAQ"     : "NCRP FAQ - cybercrime.gov.in",
+    "I4C_FAQ"      : "I4C Cybercrime Advisories",
+    "ROAD_ACC_FAQ" : "Road Accident FAQ - India",
+    "TRAFFIC_FAQ"  : "Traffic Rules FAQ - India",
+    "ADSI_2024"    : "ADSI 2024 Chapter 1A - Traffic",
+    "MVA_1988"     : "Motor Vehicles Act 1988",
+    "CMVR_1989"    : "Central Motor Vehicles Rules 1989",
+    "MVA_2019"     : "Motor Vehicles Amendment Act 2019"
 }
 
 # ── App Settings ──────────────────────────────────────
