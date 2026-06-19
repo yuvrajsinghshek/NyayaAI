@@ -13,17 +13,17 @@ log = logging.getLogger(__name__)
 
 
 def get_source_key(filename):
-    # match filename to SOURCE_MAP key
-    # so we know which FAQ file this belongs to
     filename_upper = filename.upper()
 
-    if "NCRP" in filename_upper:
+    if "NCRP" in filename_upper or "FAQ1" in filename_upper:
         return "NCRP_FAQ"
-    elif "FAQ2" in filename_upper:
-        # all cybercrime advisories collection
-        return "FAQ2"
+    elif "FAQ2" in filename_upper or "I4C" in filename_upper:
+        return "I4C_FAQ"
+    elif "ROAD" in filename_upper or "ACCIDENT" in filename_upper:
+        return "ROAD_ACC_FAQ"
+    elif "TRAFFIC" in filename_upper:
+        return "TRAFFIC_FAQ"
     else:
-        # if no match use filename as source key
         return filename.replace(".txt", "").upper()
 
 
