@@ -65,7 +65,11 @@ CATEGORIES = [
     "USDT Crypto Laundering",
     "Illegal Loan Apps",
     "Banking Fraud Indicators",
-    "Regulatory Recommendations"
+    "Regulatory Recommendations",
+    "Road Safety Rules",
+    "Traffic Violations",
+    "Motor Vehicles Act",
+    "Road Accident Guidelines"
 ]
 
 # ── Source Mapping ────────────────────────────────────

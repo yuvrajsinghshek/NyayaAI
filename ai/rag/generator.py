@@ -74,7 +74,7 @@ PREVIOUS CONVERSATION:
     else:
         lang_instruction = "RESPOND IN ENGLISH ONLY. Do not use any Hindi words."
 
-    return f"""You are NyayaAI, a cybercrime awareness assistant for Indian citizens.
+    return f"""You are NyayaAI, a cybercrime and road safety awareness assistant for Indian citizens.
 Answer ONLY using the context provided below.
 Use previous conversation to understand follow-up questions.
 
@@ -82,13 +82,14 @@ LANGUAGE RULE — MANDATORY:
 {lang_instruction}
 
 STRICT RULES:
-1. ONLY use information from the context below
-2. Do NOT answer questions unrelated to cybercrime
-3. Do NOT make up any information
-4. If context does not have enough info — say you don't have information and suggest cybercrime.gov.in
-5. Keep answer clear — 3 to 5 sentences maximum
-6. Do not say "according to the context"
-7. Use previous conversation for follow-up questions
+1. ONLY use information from the context below.
+2. ONLY answer questions related to cybercrime, road safety, and traffic rules. Do NOT answer anything else.
+3. Do NOT make up any information.
+4. If context does not have enough info — say you don't have information and suggest visiting cybercrime.gov.in or morth.nic.in.
+5. Format your answers clearly using bullet points to make them helpful and easy to read.
+6. Keep answer clear and concise.
+7. Do not say "according to the context".
+8. Use previous conversation for follow-up questions.
 {history_section}
 CONTEXT:
 {context}
@@ -102,24 +103,31 @@ ANSWER:"""
 def generate_answer(user_question, chunks,
                     chat_history="", user_name=None):
 
-    # handle greetings
+    # handle greetings dynamically via LLM
     if is_greeting(user_question):
-        if user_name:
-            greeting = f"Hello, {user_name}! I am NyayaAI, your legal awareness assistant. I can help you with:\n\n🔐 **Cybercrime Awareness** — Digital arrest scams, banking fraud, illegal loan apps, OTP fraud, how to report cybercrime\n\n🚦 **Road Safety & Traffic Rules** — Motor Vehicles Act, traffic violations, road accident guidance, CMVR rules\n\nWhat would you like to know?"
-        else:
-            greeting = "Hello! I am NyayaAI, your legal awareness assistant. I can help you with:\n\n🔐 **Cybercrime Awareness** — Digital arrest scams, banking fraud, illegal loan apps, OTP fraud, how to report cybercrime\n\n🚦 **Road Safety & Traffic Rules** — Motor Vehicles Act, traffic violations, road accident guidance, CMVR rules\n\nWhat would you like to know?"
-
+        user_context = f"The user's name is {user_name}." if user_name else "You don't know the user's name yet."
+        sys_prompt = f"You are NyayaAI, a friendly legal assistant for Indian citizens. {user_context} The user is greeting you. Respond politely and naturally like a chatbot. Keep it short (1-2 sentences). Ask how you can help them with Cybercrime or Road Safety today."
+        
+        greeting_resp = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[
+                {"role": "system", "content": sys_prompt},
+                {"role": "user", "content": user_question}
+            ],
+            temperature=0.6,
+            max_tokens=150
+        )
         return {
-            "answer"  : greeting,
-            "source"  : None,
-            "category": None,
+            "answer"  : greeting_resp.choices[0].message.content.strip(),
+            "source"  : "NyayaAI System",
+            "category": "Greeting",
             "found"   : True
         }
 
     # no chunks found — out of scope
     if not chunks:
         return {
-            "answer"  : "I don't have specific information about this topic in my knowledge base.\n\nI can help you with:\n\n🔐 **Cybercrime:**\n📞 Helpline: 1930\n🌐 www.cybercrime.gov.in\n📱 @cyberdost\n\n🚦 **Road Safety & Traffic:**\n📞 Emergency: 112\n🌐 www.morth.nic.in",
+            "answer"  : "I don't have specific information about this topic in my knowledge base. I only answer questions related to Cybercrime and Road Safety/Traffic Rules.\n\nHere are some helpful resources:\n\n🔐 **Cybercrime:**\n📞 Helpline: 1930\n🌐 www.cybercrime.gov.in\n📱 @cyberdost\n\n🚦 **Road Safety & Traffic:**\n📞 Emergency: 112\n🌐 www.morth.nic.in",
             "source"  : None,
             "category": None,
             "found"   : False
@@ -133,7 +141,7 @@ def generate_answer(user_question, chunks,
         messages    = [
             {
                 "role"   : "system",
-                "content": "You are NyayaAI, a cybercrime awareness assistant for Indian citizens. Only answer cybercrime related questions."
+                "content": "You are NyayaAI, a cybercrime and road safety awareness assistant for Indian citizens. Only answer questions related to cybercrime and road safety/traffic rules."
             },
             {
                 "role"   : "user",
