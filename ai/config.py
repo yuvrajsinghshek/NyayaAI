@@ -27,7 +27,7 @@ CHROMA_DIR = BASE_DIR / os.getenv("CHROMA_DB_PATH",
 # os.getenv reads value from .env file
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_MODEL   = os.getenv("GROQ_MODEL",
-                          "llama-3.3-70b-versatile")
+                          "llama3-8b-8192")
 
 # ── Embeddings Settings ───────────────────────────────
 # this model converts text into vectors

@@ -99,7 +99,7 @@ if user_question:
                         "message"   : user_question,
                         "user_id"   : st.session_state.get("user_id")
                     },
-                    timeout = 30
+                    timeout = 60
                 )
                 if response.status_code == 200:
                     result = response.json()

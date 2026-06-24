@@ -87,7 +87,7 @@ STRICT RULES:
 3. Do NOT make up any information.
 4. If context does not have enough info — say you don't have information and suggest visiting cybercrime.gov.in or morth.nic.in.
 5. Format your answers clearly using bullet points to make them helpful and easy to read.
-6. Keep answer clear and concise.
+6. Keep answer short, clear, and concise (Maximum 2 or 3 bullet points).
 7. Do not say "according to the context".
 8. Use previous conversation for follow-up questions.
 {history_section}
